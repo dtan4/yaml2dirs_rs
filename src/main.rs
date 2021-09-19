@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::env;
 use std::error::Error;
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process;
 
 use serde::{Deserialize, Serialize};
@@ -18,7 +18,7 @@ fn parse_yaml_file(filename: &str) -> Result<DirTree, Box<dyn Error>> {
     Ok(dir_tree)
 }
 
-fn make_dirs(root_dir: &str, dir_tree: &DirTree) -> Result<(), Box<dyn Error>> {
+fn make_dirs(root_dir: &PathBuf, dir_tree: &DirTree) -> Result<(), Box<dyn Error>> {
     let root_path = Path::new(&root_dir);
 
     for (d, v) in &dir_tree.0 {
@@ -28,7 +28,7 @@ fn make_dirs(root_dir: &str, dir_tree: &DirTree) -> Result<(), Box<dyn Error>> {
 
         match v {
             Some(t) => {
-                if let Err(e) = make_dirs(&dir.into_os_string().into_string().unwrap(), t) {
+                if let Err(e) = make_dirs(&dir, t) {
                     return Err(e);
                 }
             }
@@ -60,7 +60,7 @@ fn main() {
     };
 
     let root_dir = match env::current_dir() {
-        Ok(v) => v.into_os_string().into_string().unwrap(),
+        Ok(v) => v,
         Err(e) => {
             eprintln!("cannot get working directory: {}", e);
             process::exit(1);
@@ -81,11 +81,7 @@ mod tests {
 
     #[test]
     fn test_make_dirs() {
-        let root_dir = std::env::temp_dir()
-            .join("make_dirs")
-            .into_os_string()
-            .into_string()
-            .unwrap();
+        let root_dir = std::env::temp_dir().join("make_dirs");
 
         fs::create_dir_all(&root_dir).expect("failed to create tempdir");
 
@@ -129,16 +125,8 @@ mod tests {
 
             for wd in want_dirs {
                 let p = root_dir_path.join(&wd);
-                assert!(
-                    p.exists(),
-                    "{} doesn't exist",
-                    p.into_os_string().into_string().unwrap()
-                );
-                assert!(
-                    p.is_dir(),
-                    "{} is not a directory",
-                    p.into_os_string().into_string().unwrap()
-                );
+                assert!(p.exists(), "{} doesn't exist", p.display());
+                assert!(p.is_dir(), "{} is not a directory", p.display());
             }
         });
 
