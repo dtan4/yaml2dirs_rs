@@ -2,7 +2,6 @@ use std::collections::HashMap;
 use std::env;
 use std::error::Error;
 use std::fs;
-use std::panic;
 use std::path::Path;
 use std::process;
 
@@ -76,6 +75,8 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
+    use std::panic;
+
     use super::*;
 
     #[test]
