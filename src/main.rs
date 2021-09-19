@@ -20,12 +20,10 @@ fn parse_yaml_file(filename: &str) -> Result<DirTree, Box<dyn Error>> {
 }
 
 fn make_dirs(root_dir: &str, dir_tree: &DirTree) -> Result<(), Box<dyn Error>> {
-    let path = Path::new(&root_dir);
-
-    println!("{:?}", path);
+    let root_path = Path::new(&root_dir);
 
     for (d, v) in &dir_tree.0 {
-        let dir = path.join(Path::new(&d));
+        let dir = root_path.join(Path::new(&d));
 
         fs::create_dir(&dir)?;
 
@@ -54,8 +52,6 @@ fn main() {
         }
     };
 
-    println!("{}", filename);
-
     let dir_tree = match parse_yaml_file(&filename) {
         Ok(v) => v,
         Err(e) => {
@@ -64,8 +60,6 @@ fn main() {
         }
     };
 
-    println!("{:?}", dir_tree);
-
     let root_dir = match env::current_dir() {
         Ok(v) => v.into_os_string().into_string().unwrap(),
         Err(e) => {
@@ -73,8 +67,6 @@ fn main() {
             process::exit(1);
         }
     };
-
-    println!("{}", root_dir);
 
     if let Err(e) = make_dirs(&root_dir, &dir_tree) {
         eprintln!("cannot create directories: {}", e);
