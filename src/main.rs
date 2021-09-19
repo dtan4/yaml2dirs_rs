@@ -27,9 +27,7 @@ fn make_dirs(root_dir: &PathBuf, dir_tree: &DirTree) -> Result<(), Box<dyn Error
         fs::create_dir(&dir)?;
 
         if let Some(t) = v {
-            if let Err(e) = make_dirs(&dir, t) {
-                return Err(e);
-            }
+            make_dirs(&dir, t)?
         }
     }
 
