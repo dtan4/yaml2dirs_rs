@@ -4,7 +4,7 @@ name: CI
 
 jobs:
   check:
-    name: Rust project
+    name: Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -25,7 +25,7 @@ jobs:
           command: check
 
   test:
-    name: Rust project
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
